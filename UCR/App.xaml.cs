@@ -56,7 +56,7 @@ namespace HidWizards.UCR
             }
         }
 
-        private void Context_MinimizedToTrayEvent()
+        private void Context_MinimizedToTrayEvent(bool x)
         {
             StartMinimized = true;
         }
@@ -164,7 +164,16 @@ namespace HidWizards.UCR
             byte[] argumentsBuffer = new byte[4096];
             pipeServer.Read(argumentsBuffer, 0, 4096);
             Logger.Debug(Encoding.Default.GetString(argumentsBuffer));
-            context.ParseCommandLineArguments(Encoding.Default.GetString(argumentsBuffer).TrimEnd('\0').Split(';'));
+            if (Encoding.Default.GetString(argumentsBuffer).TrimEnd('\0') == "") {
+                Application.Current.Dispatcher.Invoke(() =>
+                    context.ParseCommandLineArguments(new string[0])
+                );
+            }
+            else {
+                Application.Current.Dispatcher.Invoke(() =>
+                    context.ParseCommandLineArguments(Encoding.Default.GetString(argumentsBuffer).TrimEnd('\0').Split(';'))
+                );
+            }
             pipeServer.Disconnect();
             pipeServer.BeginWaitForConnection(ArgumentsRecieved, null);
         }

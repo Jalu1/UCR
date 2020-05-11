@@ -357,9 +357,10 @@ namespace HidWizards.UCR.Views
             _dashboardViewModel.SelectedProfileItem = treeView?.SelectedItem as ProfileItem;
         }
 
-        private void Context_MinimizedToTrayEvent()
+        private void Context_MinimizedToTrayEvent(bool x)
         {
-            Hide();
+            if(x) Hide();
+            else ShowWindow();
         }
     }
 }

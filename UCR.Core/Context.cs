@@ -34,7 +34,7 @@ namespace HidWizards.UCR.Core
 
         public delegate void ActiveProfileChanged(Profile profile);
         public event ActiveProfileChanged ActiveProfileChangedEvent;
-        public event Action MinimizedToTrayEvent;
+        public event Action<bool> MinimizedToTrayEvent;
 
         internal bool IsNotSaved { get; private set; }
         internal IOController IOController { get; set; }
@@ -78,7 +78,7 @@ namespace HidWizards.UCR.Core
         
         public void MinimizeToTray()
         {
-            MinimizedToTrayEvent.Invoke();
+            MinimizedToTrayEvent.Invoke(true);
         }
 
         private void FindAndLoadProfile(string profileString)
@@ -91,7 +91,8 @@ namespace HidWizards.UCR.Core
 
         public void ParseCommandLineArguments(IEnumerable<string> args)
         {
-            options.Parse(args);
+            if (args.Count() == 0) MinimizedToTrayEvent.Invoke(false);
+            else options.Parse(args);
         }
 
         public List<Plugin> GetPlugins()

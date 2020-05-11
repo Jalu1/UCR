@@ -70,11 +70,19 @@ namespace HidWizards.UCR.Views
             }
         }
 
-        private void Context_MinimizedToTrayEvent()
+        private void Context_MinimizedToTrayEvent(bool x)
         {
-            Minimized = true;
-            TrayIcon.Visible = true;
-            TrayIcon.ShowBalloonTip(5000);
+            if (x)
+            {
+                Minimized = true;
+                TrayIcon.Visible = true;
+                TrayIcon.ShowBalloonTip(5000);
+            }
+            else
+            {
+                Minimized = false;
+                TrayIcon.Visible = false;
+            }
         }
 
         private void ExitStrip_Click(object sender, EventArgs e)
