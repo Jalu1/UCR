@@ -126,9 +126,7 @@ namespace HidWizards.UCR
         {
             pipeServer.EndWaitForConnection(result);
             byte[] argumentsBuffer = new byte[4096];
-            pipeServer.Read(argumentsBuffer, 0, 4096);
-            Logger.Debug(Encoding.Default.GetString(argumentsBuffer));
-            if (Encoding.Default.GetString(argumentsBuffer).TrimEnd('\0') == "") {
+            if (pipeServer.Read(argumentsBuffer, 0, 4096) == 0) {
                 Application.Current.Dispatcher.Invoke(() =>
                     context.ParseCommandLineArguments(new string[0])
                 );
