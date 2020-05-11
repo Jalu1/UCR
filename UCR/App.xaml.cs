@@ -25,7 +25,6 @@ namespace HidWizards.UCR
         private NamedPipeServerStream pipeServer;
         private SingleGlobalInstance mutex;
         private bool StartMinimized;
-        private byte[] argumentsBuffer;
 
         protected override void OnStartup(StartupEventArgs e)
         {
@@ -115,50 +114,15 @@ namespace HidWizards.UCR
                 pipeClient.Connect();
                 pipeClient.Write(Encoding.Default.GetBytes(args), 0, Encoding.Default.GetByteCount(args));
             }
-            /*IntPtr ptrCopyData = IntPtr.Zero;
-            try
-            {
-                // Create the data structure and fill with data
-                NativeMethods.COPYDATASTRUCT copyData = new NativeMethods.COPYDATASTRUCT
-                {
-                    dwData = new IntPtr(2),
-                    cbData = args.Length + 1,
-                    lpData = Marshal.StringToHGlobalAnsi(args)
-                };
-                // Just a number to identify the data type
-                // One extra byte for the \0 character
-
-                // Allocate memory for the data and copy
-                ptrCopyData = Marshal.AllocCoTaskMem(Marshal.SizeOf(copyData));
-                Marshal.StructureToPtr(copyData, ptrCopyData, false);
-
-                // Send the message
-                foreach (var proc in processes)
-                {
-                    if (proc.MainWindowHandle == IntPtr.Zero) continue;
-                    NativeMethods.SendMessage(proc.MainWindowHandle, NativeMethods.WM_COPYDATA, IntPtr.Zero, ptrCopyData);
-                }
-                    
-            }
-            catch (Exception e)
-            {
-                Logger.Error("Unable to send args to existing process", e);
-            }
-            finally
-            {
-                // Free the allocated memory after the control has been returned
-                if (ptrCopyData != IntPtr.Zero)
-                    Marshal.FreeCoTaskMem(ptrCopyData);
-            }*/
         }
 
-        void StartPipeServer()
+        private void StartPipeServer()
         {
             pipeServer = new NamedPipeServerStream("ucrargumentpipe", PipeDirection.In, 1, PipeTransmissionMode.Byte, PipeOptions.Asynchronous);
             pipeServer.BeginWaitForConnection(ArgumentsRecieved, null);
         }
 
-        void ArgumentsRecieved(IAsyncResult result)
+        private void ArgumentsRecieved(IAsyncResult result)
         {
             pipeServer.EndWaitForConnection(result);
             byte[] argumentsBuffer = new byte[4096];
