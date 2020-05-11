@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
+using System.IO.Pipes;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Windows;
 using HidWizards.UCR.Core;
 using HidWizards.UCR.Core.Models.Settings;
@@ -19,8 +22,10 @@ namespace HidWizards.UCR
     {
         private Context context;
         private HidGuardianClient _hidGuardianClient;
+        private NamedPipeServerStream pipeServer;
         private SingleGlobalInstance mutex;
         private bool StartMinimized;
+        private byte[] argumentsBuffer;
 
         protected override void OnStartup(StartupEventArgs e)
         {
@@ -34,6 +39,7 @@ namespace HidWizards.UCR
                 _hidGuardianClient = new HidGuardianClient();
                 _hidGuardianClient.WhitelistProcess();
 
+                StartPipeServer();
                 InitializeUcr();
                 CheckForBlockedDll();
 
@@ -104,7 +110,12 @@ namespace HidWizards.UCR
             processes = processes.Where(p => p.Id != Process.GetCurrentProcess().Id).ToArray();
             if (processes.Length == 0) return;
 
-            IntPtr ptrCopyData = IntPtr.Zero;
+            using(NamedPipeClientStream pipeClient = new NamedPipeClientStream(".", "ucrargumentpipe",PipeDirection.Out))
+            {
+                pipeClient.Connect();
+                pipeClient.Write(Encoding.Default.GetBytes(args), 0, Encoding.Default.GetByteCount(args));
+            }
+            /*IntPtr ptrCopyData = IntPtr.Zero;
             try
             {
                 // Create the data structure and fill with data
@@ -138,7 +149,24 @@ namespace HidWizards.UCR
                 // Free the allocated memory after the control has been returned
                 if (ptrCopyData != IntPtr.Zero)
                     Marshal.FreeCoTaskMem(ptrCopyData);
-            }
+            }*/
+        }
+
+        void StartPipeServer()
+        {
+            pipeServer = new NamedPipeServerStream("ucrargumentpipe", PipeDirection.In, 1, PipeTransmissionMode.Byte, PipeOptions.Asynchronous);
+            pipeServer.BeginWaitForConnection(ArgumentsRecieved, null);
+        }
+
+        void ArgumentsRecieved(IAsyncResult result)
+        {
+            pipeServer.EndWaitForConnection(result);
+            byte[] argumentsBuffer = new byte[4096];
+            pipeServer.Read(argumentsBuffer, 0, 4096);
+            Logger.Debug(Encoding.Default.GetString(argumentsBuffer));
+            context.ParseCommandLineArguments(Encoding.Default.GetString(argumentsBuffer).TrimEnd('\0').Split(';'));
+            pipeServer.Disconnect();
+            pipeServer.BeginWaitForConnection(ArgumentsRecieved, null);
         }
 
         public void Dispose()
