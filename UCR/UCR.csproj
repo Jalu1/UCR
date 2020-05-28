@@ -96,7 +96,6 @@
     <Compile Include="Utilities\Converter\InverseBooleanConverter.cs" />
     <Compile Include="Utilities\DataContextBindingProxy.cs" />
     <Compile Include="Utilities\HidGuardianClient.cs" />
-    <Compile Include="Utilities\NativeMethods.cs" />
     <Compile Include="Utilities\ResourceLoader.cs" />
     <Compile Include="Utilities\SingleGlobalInstance.cs" />
     <Compile Include="Views\UCRTrayIcon.cs" />
