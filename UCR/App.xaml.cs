@@ -45,7 +45,7 @@ namespace HidWizards.UCR
                 var mw = new MainWindow(context);
                 context.MinimizedToTrayEvent += Context_MinimizedToTrayEvent;
                 context.ParseCommandLineArguments(e.Args);
-                if (!StartMinimized && SettingsCollection.LaunchMinimized) context.MinimizeToTray();
+                if (!StartMinimized && SettingsCollection.LaunchMinimized) context.MinimizeToTray(true);
                 if (!StartMinimized) mw.Show();
             }
             else
@@ -128,7 +128,7 @@ namespace HidWizards.UCR
             byte[] argumentsBuffer = new byte[4096];
             if (pipeServer.Read(argumentsBuffer, 0, 4096) == 0) {
                 Application.Current.Dispatcher.Invoke(() =>
-                    context.ParseCommandLineArguments(new string[0])
+                    context.MinimizeToTray(false)
                 );
             }
             else {

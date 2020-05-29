@@ -224,7 +224,7 @@ namespace HidWizards.UCR.Views
             if (CloseState.ForceClose.Equals(WindowCloseState)) return;
             if (SettingsCollection.MinimizeOnClose && !TrayIcon.Minimized && CloseState.None.Equals(WindowCloseState))
             {
-                Context.MinimizeToTray();
+                Context.MinimizeToTray(true);
                 e.Cancel = true;
                 return;
             }

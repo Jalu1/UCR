@@ -72,14 +72,14 @@ namespace HidWizards.UCR.Core
         {
             options = new OptionSet {
                 { "p|profile=", "The profile to search for", FindAndLoadProfile },
-                { "h|hidden", "Minimize to system tray", x => MinimizeToTray() },
+                { "h|hidden", "Minimize to system tray", x => MinimizeToTray(true) },
                 { "d", "Deactivate current active profile", x=>SubscriptionsManager.DeactivateCurrentProfile() }
             };
         }
         
-        public void MinimizeToTray()
+        public void MinimizeToTray(bool x)
         {
-            MinimizedToTrayEvent.Invoke(true);
+            MinimizedToTrayEvent.Invoke(x);
         }
 
         private void FindAndLoadProfile(string profileString)
@@ -92,8 +92,7 @@ namespace HidWizards.UCR.Core
 
         public void ParseCommandLineArguments(IEnumerable<string> args)
         {
-            if (args.Count() == 0) MinimizedToTrayEvent.Invoke(false);
-            else options.Parse(args);
+            options.Parse(args);
         }
 
         public List<Plugin> GetPlugins()
