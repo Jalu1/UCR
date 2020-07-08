@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows;
@@ -9,6 +10,7 @@ using HidWizards.UCR.Core.Models.Settings;
 using HidWizards.UCR.Core.Utilities;
 using HidWizards.UCR.Utilities;
 using HidWizards.UCR.Views;
+using HidWizards.UCR.Views.Dialogs;
 using NamedPipeWrapper;
 using Application = System.Windows.Application;
 
@@ -48,6 +50,11 @@ namespace HidWizards.UCR
                 context.ParseCommandLineArguments(e.Args);
                 if (!StartMinimized && SettingsCollection.LaunchMinimized) context.MinimizeToTray();
                 if (!StartMinimized) mw.Show();
+                if (!File.Exists("context.xml"))
+                {
+                    var dialog = new FirstLaunchDialog();
+                    MaterialDesignThemes.Wpf.DialogHost.Show(dialog, "RootDialog");
+                }
             }
             else
             {

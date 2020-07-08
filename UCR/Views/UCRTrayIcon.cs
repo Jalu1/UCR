@@ -31,7 +31,7 @@ namespace HidWizards.UCR.Views
             }
             else
             {
-                StartLastProfileStrip.Text = $"Activate Last Profile {parent.Context.ProfilesManager.FindProfile(_parent.Context.RecentProfiles[0]).Title}";
+                StartLastProfileStrip.Text = $"Activate Last Profile {parent.Context.ProfilesManager.FindProfile(parent.Context.RecentProfiles[0]).Title}";
                 StartLastProfileStrip.Enabled = true;
             }
 
